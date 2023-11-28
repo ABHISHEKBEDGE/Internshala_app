@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<body>
+
+    <main role="main">
+
+        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+            <ol class="carousel-indicators">
+                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                <li data-target="#myCarousel" data-slide-to="1"></li>
+                <li data-target="#myCarousel" data-slide-to="2"></li>
+            </ol>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img class="first-slide" src="https://www.cadillac.com/content/dam/cadillac/na/us/english/index/vehicles/2025/ct5/01-images/new-masthead/my25-ct5-reveal-masthead-l-v3.jpg?imwidth=960"
+                        alt="First slide">
+                    <div class="container">
+                        <div class="carousel-caption text-left" style="color: white; font-weight: bold;">
+                            <h1>Internshala Car Rental Website</h1>
+                            <p>Book the Cars you love for Rent !</p>
+                            <p><a class="btn btn-lg btn-primary" href="{% url 'createAccount' %}" role="button">Sign up today</a></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img class="second-slide" src="{% static 'base_component/driving_car_pixabay.jpg'%}"
+                        alt="Second slide">
+                    <div class="container">
+                        <div class="carousel-caption">
+                            <h1>New cars</h1>
+                            <p>You can book brand new cars !</p>
+                            <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img class="third-slide" src="https://www.bentleymotors.com/content/dam/bentley/Master/Models/derivative-strategy-/flying-spur/flying-spur-speed/24-my/1920x960_hero_final_final.jpg/_jcr_content/renditions/original.image_file.1920.960.file/1920x960_hero_final_final.jpg"
+                        alt="Third slide">
+                    <div class="container">
+                        <div class="carousel-caption text-left" style="color: black; font-weight: bold;"> <!-- Adjusted text alignment to left -->
+                            <h1>Book your Cars</h1>
+                            <p>Any Content............</p>
+                            <p><a class="btn btn-lg btn-primary" href="#car" role="button">Book here</a></p>
+                        </div>
+                    </div>
+                </div>
+                
+            <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+
+        <div class="container">
+            <div class="input-group mb-3 justify-content-center">
+                <form action="{% url 'homepage'%}" method="POST">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <select class="custom-select" id="inputGroupSelect04"
+                            aria-label="Example select with button addon" style="max-width: 25%;" name='selection'>
+                            <option selected>Our cars</option>
+                            <option value="name" {% if selection == "name" %} selected {% endif %}>Audi</option>
+                            <option value="color" {% if selection == "color" %} selected {% endif %}>BMW</option>
+                            <option value="year" {% if selection == "year" %} selected {% endif %}>Benz</option>
+                        </select>
+                        <input type="text" class="form-control" aria-label="Text input with segmented dropdown button"
+                            name='keyword' value="{{ keyword }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-success" type="submit">Go!</button>
+                        </div>
+                        
+                    </div>
+            </div>
+            <div class="input-group mb-3 justify-content-end">
+                {% if perms.managecar.add_car %}
+                        <div class="">
+                            <a href="{% url 'add_edit_car' %}" type="button" class="btn btn-success btn-sm">Add New Car</a>
+                        </div>
+                        {% endif %}
+            </div>
+            <br>
+
+            </form>
+
+
+
+            <div class="container" id='car'>
+                <div class="row row-cols-1 row-cols-md-3">
+                    {% for car in cars%}
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <img src="/media/{{ car.pic_url }}" class="card-img-top" alt="..."
+                                style="width: 100%; height: 17rem ;">
+                            <div class="card-body">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ car.name }}
+                                        {% if perms.managecar.change_car %}
+                                        <span {% if car.status == 'AVAILABLE' %} class="badge badge-success"
+                                            {% elif  car.status == 'NO_AVAILABLE' %} class="badge badge-danger"
+                                            {% elif  car.status == 'HIDE' %} class="badge badge-warning" {% endif %}
+                                            disabled>{{car.get_status_display}}</span>
+                                        {% endif %}
+                                    </h5>
+                                    <p class="card-text">{{ car.get_category_display }}</p>
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                                        <button type="button" class="btn btn-dark btn-sm"
+                                            style="margin: 4px;">{{ car.color }}</button>
+                                        <button type="button" class="btn btn-info btn-sm"
+                                            style="margin: 4px;">{{ car.years }}</button>
+                                        <button type="button" class="btn btn-success btn-sm"
+                                            style="margin: 4px;">{{ car.price }} rupees</button>
+                                    </div>
+                                    <br>
+                                    {% if perms.managecar.change_car %}
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                                        <a type="button" class="btn btn-success btn-sm" data-toggle="modal"
+                                            data-target="#exampleModalCenter{{car.id}}" style="margin: 4px;">
+                                            view
+                                        </a>
+                                        <a href="{% url 'change_car' id_car=car.id %}" type="button"
+                                            class="btn btn-danger btn-sm" style="margin: 4px;">edit</a>
+                                        <a href="{% url 'home_car_hide' car.id %}" type="button"
+                                            class="btn btn-warning btn-sm" style="margin: 4px;">
+                                            hide
+                                        </a>
+                                    </div>
+
+
+
+                                    <div class="modal fade" id="exampleModalCenter{{car.id}}" tabindex="-1"
+                                        role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLongTitle">หมายเลขรหัสรถ
+                                                        {{ car.id }} : {{ car.update_time}} <span
+                                                            {% if car.status == 'AVAILABLE' %}
+                                                            class="badge badge-success"
+                                                            {% elif  car.status == 'NO_AVAILABLE' %}
+                                                            class="badge badge-danger" {% elif  car.status == 'HIDE' %}
+                                                            class="badge badge-warning" {% endif %}
+                                                            disabled>{{car.get_status_display}}</span></h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="modal-body">
+                                                        <div class="container-fluid">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <img src="/media/{{ car.pic_url }}" alt="" srcset=""
+                                                                        style="max-width:100%;">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <table class="table table-borderless">
+
+                                                                        <tr>
+                                                                            <td>Car name</td>
+                                                                            <td>{{car.name }}</td>
+
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>car year</td>
+                                                                            <td>{{car.years}}</td>
+
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>car colour</td>
+                                                                            <td>{{car.color}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>gear type</td>
+                                                                            <td>{{ car.get_type_gear_display }}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>category</td>
+                                                                            <td>{{ car.get_category_display}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Number of seats</td>
+                                                                            <td>{{ car.number_seat}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Number of doors</td>
+                                                                            <td>{{ car.number_door}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Car price</td>
+                                                                            <td>{{ car.price}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Update time</td>
+                                                                            <td>{{ car.update_time}}</td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Close</button>
+                                                    <a href='{% url "car_dashboard" %}' type="button"
+                                                        class="btn btn-success">More Details</a>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    {% else %}
+
+                                    <a href="{% url 'detail' car.id %}"><button type="button"
+                                            class="btn btn-primary btn-sm btn-block">
+                                            abcd
+                                        </button></a>
+
+                                    {% endif %}
+                                    <!-- </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% empty %}
+                        <div></div>
+                    <div class="alert alert-primary text-center" role="alert">
+                    Book the cars from belows
+                      </div>
+                        
+                    {% endfor %}
+                </div>
+</body>
+
+</html>
+
+
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
