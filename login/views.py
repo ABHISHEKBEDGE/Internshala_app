@@ -42,8 +42,8 @@ def my_login(request):
      
     return render(request, 'login/login.html',context = context)
 
-def createAccount(request):
-    context={}
+def create_account(request, group_name):
+    context = {}
     if request.method == 'POST':
         completed = request.POST.get('agree-term')
         username = request.POST.get('username')
@@ -58,29 +58,35 @@ def createAccount(request):
                 context['error'] = 'Password do not match'
             else:
                 try:
-                    user = User.objects.create_user(username, email, password)
-                    print('reach')
-                    Groups = Group.objects.get(name='register_user')
+                    user = User.objects.create_user(username, email, password,is_superuser=True if group_name=='register_admin' else False,is_staff=True if group_name=='register_admin' else False)
+                    # group = Group.objects.get(name=group_name)
                     user.first_name = fname
                     user.last_name = lname
-                    user.groups.add(Groups)
+                    # user.groups.add(group)
                     user.save()
-                    success = 'Your Account '+username+' : Success Sign up' 
+                    success = 'Your Account ' + username + ' : Success Sign up'
                     request.session['success'] = success
                     return redirect('my_login')
                 except Exception as e:
                     context['error'] = '%s' % (e.args)
-                
+
         else:
-            context['error'] = 'Please agree Terms of service'
+            context['error'] = 'Please agree to the Terms of Service'
 
         context['username'] = username
-        context['fname']= fname
+        context['fname'] = fname
         context['lname'] = lname
         context['email'] = email
         context['signup'] = 'True'
- 
-    return render(request,'login/create_account.html',context=context)
+
+    template = 'login/create_account.html' if group_name == 'register_user' else 'login/create_account_admin.html'
+    return render(request, template, context=context)
+
+def createAccount(request):
+    return create_account(request, 'register_user')
+
+def createAccountAdmin(request):
+    return create_account(request, 'register_admin')
     
 @login_required
 def ChangePassword(request):

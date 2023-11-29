@@ -11,14 +11,14 @@
 
     <link rel="stylesheet" href="{% static 'css/signincss.css'%}">
 
-    
+
     <style>
         /* GLOBAL STYLES
 -------------------------------------------------- */
         /* Padding below the footer and lighter body text */
         @font-face {
-                font-family: Prompt;
-                src: url('{% static 'Prompt/Prompt-Regular.ttf' %}');
+            font-family: Prompt;
+            src: url('{% static ' Prompt/Prompt-Regular.ttf' %}');
         }
 
         body {
@@ -150,24 +150,26 @@
                 </a>
 
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    {% if perms.managecar.change_rent %} 
+                    {% if perms.managecar.change_rent %}
                     <a class="dropdown-item" href="{% url 'dashboard' %}">Dashboard</a>
                     {% endif %}
 
                     {% if perms.managecar.add_rent %}
-                       <a class="dropdown-item" href="{% url 'reservation_list' %}">Booked Cars</a>
+                    <a class="dropdown-item" href="{% url 'reservation_list' %}">Booked Cars</a>
                     {% endif %}
-                    
+
                     <a class="dropdown-item" href="{% url 'ChangePassword' %}">Reset Password</a>
                     <a class="dropdown-item" href="{% url 'my_logout' %}">logout</a>
                 </div>
             </div>
             {% else %}
             <div class="form-inline my-2 my-lg-0 ">
-                <a href="{% url 'my_login' %}"><button class="btn btn-outline-success my-2 my-sm-0 mx-2" 
-                        type="button" >login</button></a>
+                <a href="{% url 'my_login' %}"><button class="btn btn-outline-success my-2 my-sm-0 mx-2"
+                        type="button">login</button></a>
                 <a href="{% url 'createAccount' %}"><button class="btn btn-outline-success my-2 my-sm-0 mx-2"
                         type="button">Create Account</button></a>
+                <a href="{% url 'createAccountAdmin' %}"><button class="btn btn-outline-success my-2 my-sm-0 mx-2"
+                        type="button">CreateAccountAdmin</button></a>
             </div>
             {% endif %}
             </div>
